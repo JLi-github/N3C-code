@@ -1,0 +1,67 @@
+fig_1b_3 <- function() {
+library(meta)
+
+# Create the input data frame
+# Create data frame
+  data <- data.frame(
+      
+    comparison = c(
+      "Vaccination vs. Pre-Pandemic_Ctrl",
+      "Infection vs. Pre-Pandemic_Ctrl",
+      "Vaccination vs. Pandemic_Ctrl",
+      "Infection vs. Pandemic_Ctrl",
+      "Infection vs. Vaccination"
+    ),
+
+    event1 = c(56, 366, 56, 366, 366),
+    n1 = c(3880554, 4217023, 3880554, 4217023, 4217023),
+    event2 = c(13, 13, 14, 14, 56),
+    n2 = c(366040, 366040, 376834, 376834, 3880554),
+    logrank_pvalue = c('0.0025', "<0.0001", '0.001', '0.004', "<0.0001")
+
+  )
+
+# Run meta-analysis (Risk Ratio)
+meta_analysis <- metabin(
+  event.e = event1, n.e = n1,
+  event.c = event2, n.c = n2,
+  data = data,
+  studlab = comparison,
+  sm = "RR", method = "Inverse", incr = 0.5
+)
+
+# Extract per-study effect sizes and CI
+rr_ci_strings <- sprintf("%.2f (%.2f, %.2f)",
+                         exp(meta_analysis$TE),      # Risk Ratio
+                         exp(meta_analysis$lower),   # Lower CI
+                         exp(meta_analysis$upper))   # Upper CI
+
+# Add columns to meta_analysis$data
+meta_analysis$data$logrank_pvalue <- data$logrank_pvalue
+meta_analysis$data$RR_CI <- rr_ci_strings
+print(meta_analysis)
+# Forest plot without fixed and random effect model data
+
+plot <- forest(meta_analysis,
+  xlab = "Risk Ratio",
+  leftcols = c("studlab", "logrank_pvalue", "RR_CI"),
+  leftlabs = c("Comparison", "Log-rank P", "RR (95% CI)"),
+  rightcols = FALSE,
+  print.I2 = FALSE,     # Suppress I2 (heterogeneity)
+  print.tau2 = FALSE,   # Suppress Tau2 (heterogeneity variance)
+  print.pval = FALSE,   # Suppress overall p-value
+  print.random = FALSE, # Suppress random effects model
+  print.fixed = FALSE,  # Suppress fixed effect model
+  print.overall = FALSE, # Suppress overall summary row
+  random = FALSE,       # Disable random effects model calculation
+  fixed = FALSE,        # Disable fixed effect model calculation
+  col.diamond = "transparent", # Make summary diamond invisible
+  col.square = "black"  # Optional: Customize study squares for clarity
+)                                                                                                                                               
+# Explicitly print the plot (this ensures it shows up in non-interactive environments)
+print(plot)
+
+# Return the meta-analysis result if needed
+return(meta_analysis)
+
+}
