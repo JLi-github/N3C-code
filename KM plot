@@ -1,0 +1,74 @@
+# KM plot
+
+test1_18 <- function(COHORT_censored18) {  
+    
+    library(survival)
+    library(survminer)
+
+    COHORT_censored18 = COHORT_censored18[COHORT_censored18$group_id != 3,]
+     
+    KM <- survfit(Surv(GBS_interval_2, has_GBS) ~  group_id, data = COHORT_censored18)   # code as outcome
+   
+    KM$surv <- 1 - KM$surv
+
+    ab <- summary(KM, times = c(0,10,20,30))
+
+    # image: svg
+    svg(
+      filename=graphicsFile,
+      width=12,
+      height=11,
+      pointsize=5,
+      bg="white"
+    )
+
+      
+    plot <- ggsurvplot(
+        KM,           
+        conf.int = FALSE,  
+        ylab = expression(bold("Probability of Developing GBS, %")),
+        xlab = expression(bold("Days")),
+        ylim = c(0, 0.0001),
+        break.x.by = 5,
+        palette = c("#E7B800", "#2E9FDF"),
+       # title = "30-Day GBS Incidence Rate after Exposure to COVID-19 Antigens",
+        font.title = c(16, "bold", "Darkblue"),
+        censor.shape="|", 
+        censor.size = 4,
+
+    ggtheme = theme_minimal() + theme( 
+            panel.grid.major.x = element_blank(), # Remove major vertical grid lines
+            panel.grid.minor.x = element_blank(), # Remove minor vertical grid lines
+            # panel.grid.major.y = element_line(color = "grey80"), # Keep major horizontal grid lines
+            panel.grid.minor.y = element_blank(), 
+            axis.line = element_line(color = "black"), 
+            axis.title.x = element_text(size = 22, color = "black"), 
+            axis.title.y = element_text(size = 22, color = "black", margin = margin(r = 20)), 
+            axis.text.x = element_text(size = 22, color = "black", margin = margin(t = 10)), 
+            axis.text.y = element_text(size = 22, color = "black"), 
+            # plot.title = element_text(size = 18, color = "darkblue"), 
+            legend.title = element_text(size = 22), 
+            legend.text = element_text(size = 22), 
+            plot.margin = margin(12, 12, 12, 12),
+            panel.border = element_blank() 
+        ),
+        
+       
+        size = 2, # Line thickness
+        pval = TRUE, # Display p-value
+        pval.method = TRUE, # Display method used for p-value (Log-rank test)
+        pval.coord = c(0, 0.00009), # Coordinates for p-value placement
+        pval.size = 8,   
+        legend.title = "", # No legend title
+        legend.labs = c('Vaccination', 'Infection'),  
+        risk.table = TRUE,            
+        risk.table.height = 0.25, 
+        risk.table.y.text = FALSE,
+        risk.table.y.text.col = T,
+        surv.plot.height = 0.75,
+        data = COHORT_censored18
+        )  
+    print(ab)
+    print(plot)
+
+}
