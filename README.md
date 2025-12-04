@@ -1,4 +1,4 @@
-Environment & Versions
+**Environment & Versions**
 
 SQL: Compatible with MySQL 8.0 and PostgreSQL 13+, ensuring cross-database functionality for data extraction and manipulation.
 
@@ -8,7 +8,8 @@ R Packages: Utilizes dplyr, tidyverse, and data.table for efficient data wrangli
 
 Data Structure: OMOP Common Data Model (CDM), which standardizes clinical data to facilitate consistent analysis across multiple datasets.
 
-SQL Query Overview
+
+**SQL Query Overview**
 
 This SQL script is designed to process vaccination data in combination with associated health conditions. It performs a series of steps to prepare a clean, analysis-ready dataset and to identify relevant events for downstream analyses. The workflow includes:
 
@@ -48,7 +49,7 @@ post_ref_event: Occurred after the risk period.
 
 This classification enables clear separation of baseline versus exposure-related outcomes for analysis.
 
-Additional Notes:
+**Additional Notes**
 
 The script is designed for modular use: each step can be run independently to inspect intermediate results.
 
